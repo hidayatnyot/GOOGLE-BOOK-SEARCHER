@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Books Search</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            font-weight: 700;
+            font-size: 36px;
+            color: #007bff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #searchContainer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #searchTerm {
+            padding: 12px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            width: 300px;
+            outline: none;
+            box-shadow: none;
+        }
+        #searchTerm:focus {
+            border-color: #007bff;
+        }
+        #searchButton {
+            padding: 12px 30px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        #searchButton:hover {
+            background-color: #0056b3;
+        }
+        #results {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 40px;
+            gap: 30px;
+        }
+        .book {
+            width: 300px;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .book:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .book img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .book img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .book h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .book p {
+            font-size: 16px;
+            color: #666;
+        }
+        .book a {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .book a:hover {
+            background-color: #0056b3;
+        }
+
+        @media screen and (max-width: 768px) {
+            #searchTerm {
+                width: calc(100% - 40px);
+                margin-bottom: 10px;
+            }
+            #searchButton {
+                width: 100%;
+            }
+            .book {
+                width: calc(50% - 40px);
+            }
+        }
+        @media screen and (max-width: 480px) {
+            .book {
+                width: calc(90% - 40px);
+            }
+            
+        }
+    </style>
+</head>
+<body>
+
+<h1>GOOGLE BOOK URL SEARCHER</h1>
+
+<div id="searchContainer">
+    <input type="text" id="searchTerm" placeholder="Enter search term">
+    <button id="searchButton">CARI BUKU</button>
+</div>
+
+<div id="results"></div>
+
+<script>
+    document.getElementById('searchButton').addEventListener('click', searchBooks);
+
+    function searchBooks() {
+        const searchTerm = document.getElementById('searchTerm').value;
+        const resultsContainer = document.getElementById('results');
+        resultsContainer.innerHTML = ''; // Clear previous results
+
+        fetch(`https://www.googleapis.com/books/v1/volumes?q=${searchTerm}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.items && data.items.length > 0) {
+                    data.items.forEach(item => {
+                        const { title, authors, imageLinks, description, previewLink } = item.volumeInfo;
+                        const thumbnail = imageLinks ? imageLinks.thumbnail : 'https://via.placeholder.com/150';
+
+                        const bookElement = document.createElement('div');
+                        bookElement.classList.add('book');
+
+                        bookElement.innerHTML = `
+                            <h2>${title}</h2>
+                            <p>PEMBUAT(s): ${authors ? authors.join(', ') : 'PEMBUAT TIDAK DIKETAHUI'}</p>
+                            <img src="${thumbnail}" alt="COVER BUKU">
+                            <p>${description ? description : 'TIDAK ADA DESKRIPSI TERSEDIA'}</p>
+                            <a href="${previewLink}" target="_blank">Preview</a>
+                        `;
+
+                        resultsContainer.appendChild(bookElement);
+                    });
+                } else {
+                    resultsContainer.textContent = 'TIDAK ADA BUKU DI TEMUKAN';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching books:', error);
+                resultsContainer.textContent = 'GAGAL MELIHAT BUKU, COBA LAGI KEMBALI.';
+            });
+    }
+</script>
+
+</body>
+</html>

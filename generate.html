@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Google Books URL</title>
+</head>
+<body>
+    <h2>Generate Google Books URL</h2>
+    <label for="bookUrl">Google Books URL:</label>
+    <input type="text" id="bookUrl" name="bookUrl" placeholder="Masukkan URL buku...">
+    <br>
+    <button onclick="generateGoogleBooksURL()">Generate URL</button>
+    <br>
+    <p id="outputURL"></p>
+
+    <script>
+        function generateGoogleBooksURL() {
+            var baseURL = "https://books.google.co.id/books?";
+            var url = document.getElementById("bookUrl").value;
+
+            // Extract book ID from URL
+            var id = extractBookIdFromUrl(url);
+
+            if (id) {
+                var newbks = "0";
+                var lpg = "PA88";
+                var pg = "PA88";
+                var output = "embed";
+
+                var finalURL = baseURL + "id=" + id + "&newbks=" + newbks + "&lpg=" + lpg + "&pg=" + pg + "&output=" + output;
+
+                var outputElement = document.getElementById("outputURL");
+                outputElement.textContent = "Generated URL: " + finalURL;
+            } else {
+                alert("URL yang dimasukkan tidak valid.");
+            }
+        }
+
+        function extractBookIdFromUrl(url) {
+            var match = url.match(/id=([^&]+)/);
+            if (match) {
+                return match[1];
+            } else {
+                return null;
+            }
+        }
+    </script>
+</body>
+</html>
